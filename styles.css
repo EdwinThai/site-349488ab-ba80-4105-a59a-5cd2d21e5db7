@@ -263,3 +263,8 @@ a { color: inherit; }
   .btn:hover, .btn:focus-visible { transform: none; }
   .mobile-nav { transform: none; }
 }
+
+/* Hero text black (operator 2026-10-04) */
+.hero .hero-intro .hi-name, .hero .hero-intro .hi-name span { background: none !important; color: #151515 !important; -webkit-text-fill-color: #151515; }
+.hero .hero-intro .hi-small { color: #151515 !important; }
+/* end hero text */
