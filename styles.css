@@ -2,18 +2,18 @@
 @font-face { font-family: 'Karla'; src: url('karla-latin.woff2') format('woff2'); font-weight: 300 700; font-display: swap; }
 
 :root {
-  --paper: #FAFAF8;
+  --paper:#FAFBF8;
   --paper-white: #FFFFFF;
-  --blush: #F1F1EE;
+  --blush:#EAF0E6;
   --ink: #151515;
   --ink-faint: #5C5C5C;
-  --accent: #1A1A1A;
-  --accent-deep: #000000;
-  --accent-soft: #E4E4E0;
+  --accent:#8A9E86;
+  --accent-deep:#1F2420;
+  --accent-soft:#CBD8C6;
   --font-head: 'Italiana', Georgia, serif;
   --font-body: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --header-h: 84px; --accent-text: #1A1A1A;
+  --header-h: 84px; --accent-text:#5B6E58;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -191,7 +191,7 @@ a { color: inherit; }
 @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(3); opacity: 0; } }
 
 /* Booking */
-.book { background: #2B2926; color: #fff; text-align: center; }
+.book { background: #2F3A31; color: #fff; text-align: center; }
 .book-inner { display: flex; flex-direction: column; align-items: center; }
 .book h2 { max-width: 18ch; }
 .book p { margin-inline: auto; font-size: 1.15rem; }
@@ -201,7 +201,7 @@ a { color: inherit; }
 .reviews-section, #bra-att-veta { background: var(--paper); }
 
 /* Contact */
-.contact { background: #2B2926; color: #FAFAF8; padding-bottom: clamp(4rem, 8vw, 6rem); }
+.contact { background: #2F3A31; color: #FAFAF8; padding-bottom: clamp(4rem, 8vw, 6rem); }
 .contact h2 { max-width: 16ch; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
 .contact-list { margin: 2rem 0 0; display: grid; gap: 1.3rem; }
