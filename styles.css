@@ -268,3 +268,14 @@ a { color: inherit; }
 .hero .hero-intro .hi-name, .hero .hero-intro .hi-name span { background: none !important; color: #151515 !important; -webkit-text-fill-color: #151515; }
 .hero .hero-intro .hi-small { color: #151515 !important; }
 /* end hero text */
+
+/* Selma hover: fill swap, no lift (operator 2026-10-04) */
+.btn { transition: background-color .25s ease, color .25s ease, border-color .25s ease; }
+.btn:hover, .btn:focus-visible { transform: none; }
+.btn-primary { border-color: var(--accent-deep); }
+.btn-primary:hover, .btn-primary:focus-visible { background: transparent; color: var(--accent-deep); }
+.btn-ghost:hover, .btn-ghost:focus-visible { background: var(--ink); color: #fff; }
+.btn-light { border-color: #fff; }
+.btn-light:hover, .btn-light:focus-visible { background: transparent; color: #fff; }
+.btn-outline-light:hover, .btn-outline-light:focus-visible { background: #fff; color: var(--ink); }
+/* end hover */
