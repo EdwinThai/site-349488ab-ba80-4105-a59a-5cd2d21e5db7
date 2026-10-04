@@ -2377,8 +2377,13 @@
     }
 
     // ---- open / close ----
+    // No hair questions any more (operator decision 2026-10-04): the exact
+    // service the visitor picks (e.g. "Highlights + Haircut - tjockt hår")
+    // already sets the real time and price, and the answers only ever became
+    // a note. Fewer steps, like Voady. The optional message to the stylist
+    // stays in the details step (its hint still comes from the profile).
     function stepsFor(profile, withVariant) {
-      return (withVariant ? ["variant"] : []).concat(profile.questions.map(function (qid) { return "q:" + qid; })).concat(["staff", "time", "details", "done"]);
+      return (withVariant ? ["variant"] : []).concat(["staff", "time", "details", "done"]);
     }
     function open(service) {
       // A broad service group (wireServiceGroups): pick the exact variant first.
