@@ -1793,6 +1793,33 @@
         .catch(function () { return null; });
     }
 
+    // The company's own service catalog (durations from its booking page or
+    // set by the owner in the portal). Fetched once, up front, so a duration
+    // changed in the portal after the site was built is what the popup
+    // shows and asks availability for; the server looks the same name up
+    // again (serviceName) so slots and the stored booking always agree.
+    var catalogDurations = null;
+    function catalogKey(name) {
+      return String(name || "").toLowerCase().replace(/[‐-―]/g, "-").replace(/\s+/g, " ").replace(/^[\s.,:;·-]+|[\s.,:;·-]+$/g, "").trim();
+    }
+    if (isLive) {
+      fetch(apiBase + "/bookings/" + companyId + "/services")
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          var map = {};
+          (Array.isArray(rows) ? rows : []).forEach(function (row) { if (row.duration_minutes > 0) map[catalogKey(row.name)] = row.duration_minutes; });
+          catalogDurations = map;
+        })
+        .catch(function () {});
+    }
+    function withCatalogDuration(svc) {
+      var minutes = catalogDurations && svc && svc.name ? catalogDurations[catalogKey(svc.name)] : null;
+      return minutes ? Object.assign({}, svc, { durationMinutes: minutes }) : svc;
+    }
+    function serviceParam() {
+      return state.service && state.service.name ? "&serviceName=" + encodeURIComponent(state.service.name) : "";
+    }
+
     function staffName(id) {
       var s = (staffList || []).filter(function (x) { return x.id === id; })[0];
       return s ? s.name : "";
@@ -2006,7 +2033,7 @@
         return Promise.resolve(0);
       }
       var staffParam = state.staff === "any" ? "" : "&staffId=" + state.staff.id;
-      return fetch(apiBase + "/bookings/" + companyId + "/next-available?durationMinutes=" + duration + staffParam)
+      return fetch(apiBase + "/bookings/" + companyId + "/next-available?durationMinutes=" + duration + staffParam + serviceParam())
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (n) { return n && n.date ? weekOffsetOf(n.date) : 0; })
         .catch(function () { return 0; });
@@ -2144,7 +2171,7 @@
               jobs.push(Promise.resolve({ dateStr: dateStr, staffId: p.id, slots: demoSlotsForDate(dateStr, p.id, duration), closed: d.getDay() === 0 }));
               return;
             }
-            jobs.push(fetch(apiBase + "/bookings/" + companyId + "/availability?staffId=" + p.id + "&date=" + dateStr + "&durationMinutes=" + duration)
+            jobs.push(fetch(apiBase + "/bookings/" + companyId + "/availability?staffId=" + p.id + "&date=" + dateStr + "&durationMinutes=" + duration + serviceParam())
               .then(function (r) { return r.json(); })
               .then(function (res) { return { dateStr: dateStr, staffId: p.id, slots: res.slots || [], closed: !!res.closed, timeOff: !!res.timeOff }; })
               .catch(function () { return { dateStr: dateStr, staffId: p.id, slots: [], closed: false }; }));
@@ -2355,6 +2382,8 @@
     }
     function open(service) {
       // A broad service group (wireServiceGroups): pick the exact variant first.
+      if (service.variants) service = Object.assign({}, service, { variants: service.variants.map(withCatalogDuration) });
+      service = withCatalogDuration(service);
       var group = service.variants && service.variants.length > 1 ? service : null;
       var first = group ? group.variants[0] : service;
       var profile = useHairStep ? profileFor(first.name) : { questions: [] };
