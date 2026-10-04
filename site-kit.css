@@ -1157,3 +1157,59 @@ body.sk-selma[data-hero-effect="horizon"] .hero-frame > .site-header, body.sk-se
 .service-group > .service-variant[hidden], .service-group > .service-group-name[hidden], .service-group > .service-group-desc[hidden] { display: none !important; }
 .bf-variants .bf-tile { text-align: left; }
 .sk-selma .booking-widget-modal, .sk-selma .bf-tile, .sk-selma .bf-summary { border-radius: 0 !important; }
+
+/*
+ * Selma hover + booking popup (2026-10-04, operator: the lifting hover felt
+ * wrong, and the booking popup "doesn't fit in"). On Selma sites buttons
+ * never lift or cast a shadow on hover; they only change fill/colour, softly.
+ * The booking popup takes the site's own look: its paper and ink, the
+ * heading font for the step title, hairlines instead of a dark bar and
+ * shadows, square tiles and a square uppercase button.
+ */
+.sk-selma a, .sk-selma button { transition-property: background-color, color, border-color, opacity; transition-duration: 0.25s; }
+.sk-selma a:hover, .sk-selma button:hover, .sk-selma a:active, .sk-selma button:active { transform: none !important; box-shadow: none !important; }
+.sk-selma [class*="btn"]::after { box-shadow: none !important; opacity: 0 !important; }
+.sk-selma { --sk-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); }
+.sk-selma .booking-widget-modal.bf { background: var(--paper, #fff); color: var(--ink, #222); font-family: var(--font-body, inherit); border: 1px solid var(--sk-line); border-radius: 0 !important; box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.35); }
+.sk-selma .bf-head { background: var(--paper, #fff); color: var(--ink, #222); border-bottom: 1px solid var(--sk-line); }
+.sk-selma .bf-title { font-family: var(--font-head, inherit); font-weight: 400; font-size: 1.55rem; letter-spacing: 0.02em; padding-top: 4px; }
+.sk-selma .bf-back, .sk-selma .bf-close { border-radius: 0 !important; }
+.sk-selma .bf-progress { height: 1px; background: var(--sk-line); }
+.sk-selma .bf-progress span { background: var(--accent-text, var(--accent, #333)); }
+.sk-selma .bf-summary { background: transparent; border-bottom: 1px solid var(--sk-line); }
+.sk-selma .bf-summary-service strong { font-family: var(--font-head, inherit); font-weight: 400; font-size: 1.15rem; letter-spacing: 0.02em; }
+.sk-selma .bf-step-count, .sk-selma .bf-hint { letter-spacing: 0.04em; }
+.sk-selma .bf-tile, .sk-selma .bf-unsure, .sk-selma .bf-recap, .sk-selma .booking-widget-modal .booking-cal-day { border-radius: 0 !important; background: transparent; box-shadow: none; border-color: var(--sk-line); }
+@media (hover: hover) and (pointer: fine) { .sk-selma .bf-tile:hover, .sk-selma .bf-unsure:hover { border-color: var(--accent-text, var(--accent, #333)); } }
+.sk-selma .bf-tile[aria-pressed="true"], .sk-selma .bf-unsure[aria-pressed="true"] { border-color: var(--accent-text, var(--accent, #333)); box-shadow: inset 0 0 0 1px var(--accent-text, var(--accent, #333)); background: color-mix(in srgb, var(--accent, #888) 9%, transparent); }
+.sk-selma .bf-tile-label { font-weight: 600; letter-spacing: 0.01em; }
+.sk-selma .bf-foot { border-top: 1px solid var(--sk-line); }
+.sk-selma .bf-next { border-radius: 0 !important; font-size: 12px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; padding: 1.05rem; background: var(--accent-deep, var(--ink, #222)); color: #fff; }
+@media (hover: hover) and (pointer: fine) { .sk-selma .bf-next:not(:disabled):hover { background: var(--ink, #222); } }
+.sk-selma .bf-form input, .sk-selma .bf-form textarea, .sk-selma .bf-form select { border-radius: 0 !important; border-color: var(--sk-line) !important; }
+
+/*
+ * Selma time picker (2026-10-04, operator: the week of times "didn't look
+ * right — the style or the font of the times"). The times rendered in the
+ * browser's default button font (Arial), each in its own black box, inside
+ * boxed day columns, with the dates in the display face's odd numerals. Now:
+ * the site's body font with even-width digits, no boxes, each time a quiet
+ * tinted chip (deeper tint on hover, filled when chosen), day columns open
+ * with one hairline under the weekday/date.
+ */
+.sk-selma .booking-widget-modal button, .sk-selma .booking-widget-modal input, .sk-selma .booking-widget-modal select { font-family: var(--font-body, inherit); }
+.sk-selma .booking-widget-modal .booking-cal-day { border: 0 !important; background: transparent !important; box-shadow: none !important; padding: 0.4rem 0.15rem; }
+.sk-selma .booking-widget-modal .booking-cal-day-head { border-bottom: 1px solid var(--sk-line); }
+.sk-selma .booking-widget-modal .booking-cal-day-head .dt { font-family: var(--font-body, inherit); font-weight: 500; font-variant-numeric: tabular-nums lining-nums; }
+.sk-selma .booking-widget-modal .booking-cal-day.is-today .booking-cal-day-head .dt { color: var(--accent-text, var(--accent, inherit)); }
+.sk-selma .booking-widget-modal .slot-btn {
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none !important;
+  background: color-mix(in srgb, var(--accent, #888) 11%, transparent); color: var(--ink, inherit);
+  font-family: var(--font-body, inherit); font-size: 0.84rem; font-weight: 500; letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums lining-nums; padding: 0.42rem 0;
+}
+@media (hover: hover) and (pointer: fine) { .sk-selma .booking-widget-modal .slot-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent, #888) 24%, transparent); } }
+.sk-selma .booking-widget-modal .slot-btn.is-selected { background: var(--accent-deep, var(--ink, #222)); color: #fff; }
+.sk-selma .booking-widget-modal .booking-cal-nav { border: 1px solid var(--sk-line) !important; background: transparent; color: var(--ink, inherit); box-shadow: none !important; }
+@media (hover: hover) and (pointer: fine) { .sk-selma .booking-widget-modal .booking-cal-nav:hover { border-color: var(--accent-text, var(--accent, #333)) !important; } }
+.sk-selma .booking-widget-modal .booking-cal-range .wk-num { font-family: var(--font-body, inherit); font-weight: 500; font-size: 1.05rem; font-variant-numeric: tabular-nums lining-nums; }
