@@ -14,6 +14,10 @@
 .star-empty path { fill: none; stroke: var(--ink-faint, #999); stroke-width: 1.5; }
 .star-fill path { fill: var(--accent, #333); }
 
+/* "Hoppa till innehåll" (2026-10-27): off screen until it gets keyboard focus. A site's own styles.css may restyle it. */
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 1000; }
+.skip-link:focus { left: 16px; top: 16px; padding: 10px 14px; background: var(--paper, #fff); color: var(--ink, #111); border: 1px solid var(--accent, #333); font: 600 14px/1.2 var(--font-body, sans-serif); text-decoration: none; }
+
 /*
  * Flow lines (2026-09-16, scoped to the hero 2026-09-16) — populated
  * entirely by site-kit.js's wireFlowLines(), which sets each <path>'s
@@ -136,18 +140,6 @@
 .review-card-rating .stars { display: inline-flex; gap: 2px; width: 90px; }
 .review-card-rating [data-count-to] { font-family: var(--font-head, inherit); font-size: 1.3rem; color: var(--accent, #333); }
 .review-quote { font-family: var(--font-head, inherit); font-size: 1.3rem; color: var(--ink-faint, #888); margin: 0; font-style: italic; }
-
-/*
- * Next-available note (2026-09-17) — real, computed availability, never a
- * fabricated countdown (see wireNextAvailable() in site-kit.js). Starts
- * hidden (`hidden` attribute) so a slow/failed fetch never flashes empty
- * text — site-kit.js only reveals it once it actually has a real answer.
- */
-.next-available-note {
-  display: inline-flex; align-items: center; gap: 0.4em;
-  font-size: 0.85rem; font-weight: 600; color: var(--accent, #333);
-}
-.next-available-note::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent, #333); flex: none; }
 
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
 .reveal.is-visible { opacity: 1; transform: none; }
@@ -583,6 +575,8 @@
 .bf-recap dd { margin: 0; font-weight: 600; }
 .bf-form .bd-field textarea { width: 100%; box-sizing: border-box; border: 1px solid #d7dcda; border-radius: 8px; padding: 0.6rem 0.7rem; font-size: 0.92rem; font-family: inherit; color: #16211c; resize: vertical; }
 .bf-form .bd-field label { color: var(--ink-faint, #5b625f); }
+.bf-privacy { margin: 0.8rem 0 0; font-size: 0.78rem; line-height: 1.45; color: var(--ink-faint, #5b625f); }
+.bf-privacy a { color: inherit; text-decoration: underline; }
 
 .bf-done { text-align: center; padding: 1rem 0 0.5rem; }
 .bf-done-check { width: 56px; height: 56px; margin: 0 auto 0.9rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent-deep, var(--accent, #333)); color: #fff; font-size: 1.6rem; }
@@ -850,27 +844,28 @@ body[data-hero-effect="horizon"] .site-header:not(.is-scrolled) .site-logo { opa
 
 /* 4+ people: one hairline row each */
 .team-list { max-width: 760px; margin: 0 auto; border-block: 1px solid var(--team-line); }
-.team-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 1.25rem; align-items: baseline; padding: 1.25rem 0; }
+.team-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 10em; gap: 1.25rem; align-items: baseline; padding: 1.25rem 0; }
+.team-row .team-book { justify-self: end; }
 .team-row + .team-row { border-top: 1px solid var(--team-faint); }
 .team-row .team-name { font-size: 1.85rem; }
 @media (max-width: 600px) {
-  .team-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0.15rem; }
+  .team-row { grid-template-columns: minmax(0, 1fr) 10em; row-gap: 0.15rem; }
   .team-row .team-role { grid-row: 2; }
   .team-row .team-book { grid-row: 1 / 3; grid-column: 2; align-self: center; }
 }
 
-/* 1 person: "Om oss" facts left, the person right; both share top and bottom hairlines */
-.team-about { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 5rem); border-block: 1px solid var(--team-line); }
-.team-about-text { padding-block: 2.1rem; display: grid; align-content: center; gap: 0.75rem; }
-.team-about-text p { max-width: 44ch; margin: 0.25rem 0 0; color: var(--ink-faint, inherit); }
-.team-about-person { padding-block: 2.1rem; display: grid; align-content: center; justify-items: start; gap: 0.6rem; }
-.team-about-person .team-name { font-size: clamp(2.4rem, 4.4vw, 3rem); }
-.team-about-person .team-book { margin-top: 0.4rem; }
-@media (max-width: 760px) {
-  .team-about { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .team-about-text { padding-bottom: 1.25rem; }
-  .team-about-person { border-top: 1px solid var(--team-faint); padding-top: 1.5rem; }
+/* 2-5 people: "band" (Axel's T2): the names large in one row, hairline between each, role and Boka under every name */
+.team-band { display: grid; grid-template-columns: repeat(var(--team-cols, 4), minmax(0, 1fr)); border-top: 1px solid var(--team-line); }
+.team-bcol { padding: 2.25rem clamp(0.9rem, 2vw, 2rem) 2.5rem 0; display: grid; gap: 0.85rem; align-content: start; min-width: 0; }
+.team-bcol + .team-bcol { border-left: 1px solid var(--team-faint); padding-left: clamp(0.9rem, 2vw, 2rem); }
+.team-bcol .team-name { font-size: clamp(1.5rem, 2.3vw, 2.05rem); overflow-wrap: anywhere; }
+.team-bcol .team-book { justify-self: start; margin-top: 0.6rem; }
+@media (max-width: 860px) {
+  .team-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .team-bcol:nth-child(2n + 1) { border-left: 0; padding-left: 0; }
+  .team-bcol:nth-child(n + 3) { border-top: 1px solid var(--team-faint); }
 }
+@media (max-width: 480px) { .team-band { grid-template-columns: minmax(0, 1fr); } .team-bcol, .team-bcol + .team-bcol { border-left: 0; padding-left: 0; } .team-bcol + .team-bcol { border-top: 1px solid var(--team-faint); } }
 
 
 /*
@@ -947,18 +942,6 @@ body .menu-groups.pm-enhanced {
 .hours-list li:last-child { border-bottom-color: var(--hours-line); }
 .hours-list li.is-today .hd-day, .hours-list li.is-today .hd-time { color: var(--accent-text, var(--accent, inherit)); }
 .hd-today { margin-left: 0.6rem; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); }
-.hours-split { --hours-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); max-width: 760px; margin-top: 1.5rem; border-block: 1px solid var(--hours-line); }
-.hours-col { padding: 1.6rem clamp(1rem, 3vw, 2.5rem); display: grid; align-content: start; gap: 0.9rem; }
-.hours-col:first-child { padding-left: 0; }
-.hours-col + .hours-col { border-left: 1px solid var(--hours-line); }
-.hours-col-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); }
-.hours-split .hours-list { margin: 0; max-width: none; border-top: 0; }
-.hours-split .hours-list li { border-bottom: 0; padding: 0.35rem 0; }
-@media (max-width: 640px) {
-  .hours-split { grid-template-columns: minmax(0, 1fr); }
-  .hours-col { padding-inline: 0; }
-  .hours-col + .hours-col { border-left: 0; border-top: 1px solid var(--hours-line); }
-}
 .visit-band { --visit-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--visit-line); }
 .visit-col { padding: 2.25rem clamp(1.25rem, 3vw, 2.5rem); display: grid; align-content: start; justify-items: start; gap: 0.9rem; min-width: 0; }
 .visit-col:first-child { padding-left: 0; }
@@ -987,8 +970,6 @@ body .menu-groups.pm-enhanced {
 .reviews-block { --rv-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); --rv-faint: color-mix(in srgb, var(--ink, #222) 10%, transparent); }
 .rv-head { display: flex; justify-content: center; align-items: end; gap: 1.25rem; text-align: center; margin-bottom: clamp(2rem, 5vw, 3.25rem); }
 .rv-head > div { display: grid; gap: 0.75rem; justify-items: center; }
-.is-scroll .rv-head { justify-content: space-between; text-align: left; flex-wrap: wrap; }
-.is-scroll .rv-head > div { justify-items: start; }
 .rv-eyebrow { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, currentColor)); }
 .rv-title { font-family: var(--font-head, inherit); font-size: clamp(2.1rem, 4.6vw, 3.4rem); line-height: 1.08; margin: 0; text-wrap: balance; }
 .rv-item { margin: 0; display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
@@ -1007,23 +988,22 @@ body .menu-groups.pm-enhanced {
 .rv-cols .rv-item:first-child { padding-left: 0; }
 .rv-cols .rv-item:last-child { padding-right: 0; }
 .rv-cols .rv-item + .rv-item { border-left: 1px solid var(--rv-line); }
-.rv-track { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, calc(100% / 3)); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-block: 1px solid var(--rv-line); }
-.rv-track::-webkit-scrollbar { display: none; }
-.rv-track .rv-item { scroll-snap-align: start; padding: 2rem clamp(1.25rem, 3vw, 2.25rem); border-left: 1px solid var(--rv-faint); }
-.rv-track .rv-item:first-child { border-left: 0; padding-left: 0; }
-.rv-arrows { display: flex; gap: 0.5rem; }
-.rv-arrows button { width: 46px; height: 46px; padding: 0; border: 1px solid var(--rv-line); border-radius: 0; background: transparent; box-shadow: none; color: inherit; font: inherit; font-size: 1.1rem; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
-@media (hover: hover) and (pointer: fine) { .rv-arrows button:hover { border-color: var(--accent, currentColor); color: var(--accent-text, var(--accent, inherit)); } }
+/* "airy" (Axel's R1 + Edwin's rule, 2026-10-04): no boxes, a short accent rule over each quote and a faint line between the columns. */
+.rv-airy { --rv-gap: clamp(2.25rem, 6vw, 6rem); display: grid; grid-template-columns: repeat(var(--rv-cols, 3), minmax(0, 1fr)); gap: var(--rv-gap); }
+.rv-airy .rv-item { position: relative; padding-top: 1.5rem; }
+.rv-airy .rv-item::before { content: ""; position: absolute; top: 0; left: 0; width: 40px; height: 1px; background: var(--accent, currentColor); }
+.rv-airy .rv-item blockquote { font-family: var(--font-body, inherit); font-size: 1.2rem; line-height: 1.6; }
+@media (min-width: 821px) { .rv-airy .rv-item + .rv-item::after { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--rv-gap) / -2); width: 1px; background: var(--rv-line); } }
+@media (max-width: 820px) { .rv-airy { grid-template-columns: minmax(0, 1fr); } }
 .rv-score { margin: clamp(1.75rem, 4vw, 2.5rem) 0 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.6rem 1.1rem; font-size: 0.9rem; color: var(--ink-faint, #888); }
 .is-none .rv-score { margin-top: 0; }
 .rv-score .stars { display: inline-flex; gap: 2px; }
 .rv-link { padding-bottom: 2px; border-bottom: 1px solid var(--accent, currentColor); color: var(--ink, inherit); text-decoration: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
-.rv-more:focus-visible, .rv-arrows button:focus-visible, .rv-link:focus-visible { outline: 2px solid var(--accent, currentColor); outline-offset: 3px; }
+.rv-more:focus-visible, .rv-link:focus-visible { outline: 2px solid var(--accent, currentColor); outline-offset: 3px; }
 @media (max-width: 760px) {
   .rv-cols { grid-template-columns: minmax(0, 1fr); }
   .rv-cols .rv-item { padding-inline: 0; }
   .rv-cols .rv-item + .rv-item { border-left: 0; border-top: 1px solid var(--rv-line); }
-  .rv-track { grid-auto-columns: 82%; }
 }
 
 /*
@@ -1046,8 +1026,7 @@ body .menu-groups.pm-enhanced {
  * Design library variants (2026-10-03, config/designLibrary.ts).
  * Price list "tint" (2B): the side menu with a soft accent tint behind the
  * chosen category, no arrow. Price list "tabs" (#1): a centered row of
- * light tabs above one category's rows. Reviews "carousel" (#2): one large
- * quote at a time with ← 1 / 5 → under it.
+ * light tabs above one category's rows.
  */
 .pm-enhanced.pm-tint .pm-menu { border-right: 0; padding-block: 0.6rem; gap: 4px; }
 .pm-enhanced.pm-tint .pm-menu .pm-item { grid-template-columns: minmax(0, 1fr); padding-left: 1.1rem; transition: background-color 0.2s ease; }
@@ -1063,24 +1042,13 @@ body .menu-groups.pm-enhanced.pm-tabs { grid-template-columns: minmax(0, 1fr); g
 @media (max-width: 700px) {
   .pm-enhanced.pm-tint .pm-menu { padding-block: 0; gap: 0; border-block: 1px solid var(--pm-line); }
   .pm-enhanced.pm-tint .pm-menu .pm-item { padding-left: 0.4rem; }
-  .pm-enhanced.pm-tabs .pm-menu { grid-auto-columns: minmax(0, 1fr); gap: 0; justify-content: stretch; }
+  /* Many category names don't fit side by side on a phone: one scrollable row instead of squeezed, wrapping words. */
+  .pm-enhanced.pm-tabs .pm-menu { grid-auto-columns: max-content; gap: 1.5rem; justify-content: start; overflow-x: auto; scrollbar-width: none; }
+  .pm-enhanced.pm-tabs .pm-menu::-webkit-scrollbar { display: none; }
+  .pm-enhanced.pm-tabs .pm-menu .pm-item { white-space: nowrap; }
 }
-.rv-carousel { max-width: 900px; margin: 0 auto; text-align: center; }
-.rv-carousel .rv-item { align-items: center; }
-.rv-carousel blockquote { font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.22; -webkit-line-clamp: 6; line-clamp: 6; }
-.rv-carousel .rv-more { align-self: center; }
-.rv-carousel .rv-stage { display: grid; gap: 2.5rem; }
-.rv-carousel.is-ready .rv-stage { gap: 0; }
-.rv-carousel.is-ready .rv-item { grid-area: 1 / 1; opacity: 0; visibility: hidden; }
-.rv-carousel.is-animated .rv-item { transition: opacity 0.5s ease, visibility 0.5s; }
-.rv-carousel.is-ready .rv-item.is-on { opacity: 1; visibility: visible; }
-.rv-carousel:not(.is-ready) .rv-ctrl { display: none; }
-.rv-ctrl { margin-top: 2rem; display: flex; justify-content: center; align-items: center; gap: 1.5rem; }
-.rv-ctrl button { padding: 0.4rem 0.6rem; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: inherit; font: inherit; font-size: 1.35rem; cursor: pointer; transition: color 0.2s ease; }
 @media (hover: hover) and (pointer: fine) { .rv-ctrl button:hover { color: var(--accent-text, var(--accent, inherit)); } }
-.rv-ctrl button:focus-visible { outline: 2px solid var(--accent, currentColor); outline-offset: 3px; }
-.rv-count { min-width: 5ch; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--ink-faint, #888); font-variant-numeric: tabular-nums; }
-@media (prefers-reduced-motion: reduce) { .rv-carousel.is-animated .rv-item, .pm-enhanced.pm-tint .pm-menu .pm-item { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .pm-enhanced.pm-tint .pm-menu .pm-item { transition: none; } }
 
 /*
  * Selma design system guardrails (2026-10-03). Every generated site gets
@@ -1107,14 +1075,13 @@ body .menu-groups.pm-enhanced.pm-tabs { grid-template-columns: minmax(0, 1fr); g
  * (seen on a real build). Only applies when the block sits right inside the
  * section, so a block inside a container isn't double-padded.
  */
-section > .reviews-block, section > .faq-block, section > .team-block {
+section > .reviews-block, section > .faq-block, section > .team-block, section > .about-block {
   box-sizing: border-box;
   width: 100%;
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: clamp(16px, 4vw, 48px);
 }
-.reviews-block .rv-arrows { display: flex !important; flex-direction: row !important; flex-wrap: nowrap; }
 
 /*
  * Selma hero and header, firmer (2026-10-03, after a restyled real site):
@@ -1129,7 +1096,14 @@ section > .reviews-block, section > .faq-block, section > .team-block {
 .sk-selma .hero-text > * { margin-inline: auto; max-width: 100%; }
 .sk-selma .hero-intro .hi-glow { display: none !important; }
 .sk-selma .hero-frame > .site-header::before, .sk-selma .hero-frame > .site-header::after { display: none !important; }
-.sk-selma .hero-frame > .site-header > * { width: 100%; max-width: none; margin: 0; height: auto; }
+/* One wrapper child (e.g. .header-inner) fills the header; a plain logo + nav pair sits side by side. */
+.sk-selma .hero-frame > .site-header > :only-child { width: 100%; max-width: none; margin: 0; height: auto; }
+.sk-selma .hero-frame > .site-header > :not(:only-child) { margin: 0; height: auto; }
+.sk-selma .hero-frame > .site-header > nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.6rem 1.8rem; }
+@media (max-width: 640px) {
+  .sk-selma .hero-frame > .site-header > nav { width: 100%; justify-content: space-between; gap: 0.5rem 0.9rem; }
+  .sk-selma .site-header nav a { font-size: 11px !important; letter-spacing: 0.14em; }
+}
 .sk-selma .site-header nav a, .sk-selma .site-header a:not(.site-logo) {
   font-family: var(--font-body, inherit); font-size: 12px !important; font-weight: 400 !important; line-height: 1.4;
   letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; text-decoration: none;
@@ -1146,7 +1120,11 @@ section > .reviews-block, section > .faq-block, section > .team-block {
 body.sk-selma[data-hero-effect="horizon"] .hero-frame .site-logo { display: none !important; }
 body.sk-selma[data-hero-effect="horizon"] .hero-frame > .site-header, body.sk-selma[data-hero-effect="horizon"] .hero-frame > .site-header > * { justify-content: center !important; }
 .sk-selma .hero-intro { margin-bottom: clamp(16px, 3vw, 30px) !important; }
-.sk-selma .hero-text .next-available-note { font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: var(--ink-faint, inherit); }
+.hero-intro .hi-name { text-wrap: balance; }
+/* The name stands once, big in the hero (Edwin 2026-11-02, Salong Storgatan 50). A written name in the corner just repeats
+   it, so the nav takes the middle. A real logo that passed the Brand check (an image) stays in the corner. */
+.sk-selma .hero-frame > .site-header > .site-logo:not(:has(img)) { display: none !important; }
+.sk-selma .hero-frame > .site-header:not(:has(.site-logo img)) { justify-content: center !important; }
 
 
 /*
@@ -1213,3 +1191,463 @@ body.sk-selma[data-hero-effect="horizon"] .hero-frame > .site-header, body.sk-se
 .sk-selma .booking-widget-modal .booking-cal-nav { border: 1px solid var(--sk-line) !important; background: transparent; color: var(--ink, inherit); box-shadow: none !important; }
 @media (hover: hover) and (pointer: fine) { .sk-selma .booking-widget-modal .booking-cal-nav:hover { border-color: var(--accent-text, var(--accent, #333)) !important; } }
 .sk-selma .booking-widget-modal .booking-cal-range .wk-num { font-family: var(--font-body, inherit); font-weight: 500; font-size: 1.05rem; font-variant-numeric: tabular-nums lining-nums; }
+
+
+/*
+ * Hours "side" (Axel + Edwin, design review 2026-10-04, Edwin's #2 "Öppettider
+ * och hitta hit"): the visit band as two columns inside a hairline frame. All
+ * seven days in one column on the left, no row lines (today in the accent);
+ * on the right Hitta hit on top, Kontakt below and the Boka button at the
+ * bottom. Same markup as the three-column band, the grid just places it.
+ */
+.visit-band.is-side { max-width: 760px; margin-inline: auto; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "hours addr" "hours contact"; }
+.visit-band.is-side > .visit-col { padding: 2.1rem clamp(1.25rem, 4vw, 2.75rem); gap: 0.6rem; }
+.visit-band.is-side > .visit-col:nth-child(2) { grid-area: hours; justify-items: stretch; align-content: start; gap: 1.1rem; border-left: 0; padding-left: 0; }
+.visit-band.is-side > .visit-col:nth-child(1) { grid-area: addr; border-left: 1px solid var(--visit-line); padding-bottom: 0.4rem; }
+.visit-band.is-side > .visit-col:nth-child(3) { grid-area: contact; border-left: 1px solid var(--visit-line); border-top: 0; padding-top: 0.4rem; align-content: start; }
+.visit-band.is-side .visit-head { font-size: 1.15rem; font-family: var(--font-body, inherit); line-height: 1.35; }
+.visit-band.is-side > .visit-col:nth-child(3) .btn, .visit-band.is-side > .visit-col:nth-child(3) a:last-child { margin-top: auto; }
+.visit-band.is-side .hours-list li { padding: 0.25rem 0; border-bottom: 0; }
+@media (max-width: 760px) {
+  .visit-band.is-side { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "hours" "addr" "contact"; }
+  .visit-band.is-side > .visit-col { padding-inline: 0; }
+  .visit-band.is-side > .visit-col:nth-child(1), .visit-band.is-side > .visit-col:nth-child(3) { border-left: 0; border-top: 1px solid var(--visit-line); padding-block: 1.6rem; }
+}
+
+/* FAQ layouts (F2-F5; F1 "split" is the base above). */
+.faq-block.is-centered { grid-template-columns: minmax(0, 1fr); max-width: 760px; margin-inline: auto; gap: clamp(1.75rem, 4vw, 2.75rem); }
+.faq-block.is-centered .faq-head, .faq-block.is-columns .faq-head, .faq-block.is-open .faq-head, .faq-block.is-menu .faq-head { justify-items: center; text-align: center; }
+.faq-block.is-columns, .faq-block.is-open, .faq-block.is-menu { grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vw, 3.25rem); }
+.faq-block.is-columns .faq-list, .faq-block.is-open .faq-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(2rem, 6vw, 5rem); align-items: start; border-block: 0; }
+.faq-block.is-columns .faq-item, .faq-block.is-open .faq-item { border-top: 1px solid var(--faq-line); }
+.faq-block.is-columns .faq-item + .faq-item, .faq-block.is-open .faq-item + .faq-item { border-top: 1px solid var(--faq-line); }
+.faq-block.is-open .faq-item summary { pointer-events: none; cursor: default; }
+.faq-block.is-open .faq-item summary::after { display: none; }
+@media (max-width: 760px) { .faq-block.is-columns .faq-list, .faq-block.is-open .faq-list { grid-template-columns: minmax(0, 1fr); } .faq-block.is-columns .faq-item + .faq-item, .faq-block.is-open .faq-item + .faq-item { border-top: 1px solid var(--faq-line); } }
+.faq-menu { display: grid; align-content: start; border-block: 1px solid var(--faq-line); }
+.faq-menu button { text-align: left; padding: 1.1rem 1.1rem; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--ink, #222) 10%, transparent); border-radius: 0; background: transparent; box-shadow: none; color: var(--ink-faint, inherit); font-family: var(--font-head, inherit); font-size: 1.3rem; line-height: 1.25; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
+.faq-menu button:last-child { border-bottom: 0; }
+.faq-menu button[aria-selected="true"] { background: color-mix(in srgb, var(--accent, #999) 10%, transparent); color: var(--accent-text, var(--accent, inherit)); }
+.faq-menu button:focus-visible { outline: 2px solid var(--accent, currentColor); outline-offset: -2px; }
+.faq-panel { align-self: center; display: grid; gap: 1rem; }
+.faq-panel h3 { margin: 0; font-family: var(--font-head, inherit); font-weight: 400; font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.15; }
+.faq-panel p { margin: 0; max-width: 52ch; font-size: 1.15rem; line-height: 1.6; color: var(--ink-faint, inherit); }
+.faq-block.is-menu.is-ready .faq-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(2rem, 6vw, 5rem); }
+.faq-block.is-menu.is-ready .faq-list { display: none; }
+@media (max-width: 760px) { .faq-block.is-menu.is-ready .faq-body { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } }
+
+/* Quotes in the head font (Italiana and friends have no italic): never a faux italic (design review 2026-10-04). */
+.rv-item blockquote { font-style: normal; }
+
+/* "Om oss" (config/aboutSection.ts, A1 centered / A4 facts): filled by code from verified facts only. */
+.about-eyebrow { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, currentColor)); }
+.about-title { font-family: var(--font-head, inherit); font-weight: 400; font-size: clamp(2rem, 3.6vw, 2.9rem); line-height: 1.08; margin: 0; text-wrap: balance; }
+.about-block p { margin: 0; color: var(--ink-faint, inherit); font-size: 1.15rem; line-height: 1.6; }
+.about-block.is-centered { max-width: 860px; margin-inline: auto; text-align: center; display: grid; gap: 1.5rem; justify-items: center; }
+.about-block.is-centered p { max-width: 52ch; }
+.about-block.is-facts { --about-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(2.25rem, 7vw, 6.5rem); align-items: start; }
+.about-text { display: grid; gap: 1.25rem; justify-items: start; }
+.about-text p { max-width: 48ch; }
+.about-facts { margin: 0; border-top: 1px solid var(--about-line); }
+.about-facts > div { display: grid; grid-template-columns: minmax(110px, 0.5fr) 1fr; gap: 1.25rem; padding: 1.35rem 0; border-bottom: 1px solid color-mix(in srgb, var(--ink, #222) 10%, transparent); align-items: center; }
+.about-facts dt { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text, var(--accent, currentColor)); }
+.about-facts dd { margin: 0; font-size: 1.1rem; overflow-wrap: anywhere; }
+@media (max-width: 800px) { .about-block.is-facts { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; } }
+
+/* Hours "side": the section heading above the framed block is centred like the block itself (Edwin's #2). */
+section:has(> .visit-band.is-side) { text-align: center; }
+section:has(> .visit-band.is-side) > .visit-band { text-align: left; }
+
+/*
+ * "Besök oss" in two sections (2026-10-06, config/visitSection.ts, mock-ups B2-B5):
+ * Öppettider on its own, Hitta hit (address + map) further down. The sections
+ * size their own content to the same 1120px column the other blocks use.
+ */
+.vs { --vs-line: color-mix(in srgb, var(--accent, #999) 30%, transparent); --vs-gutter: clamp(18px, 5vw, 64px); padding-block: clamp(72px, 10vw, 120px); color: var(--ink, inherit); }
+.vs > * { width: min(1120px, 100% - 2 * var(--vs-gutter)); margin-inline: auto; }
+.vs-hours-section.vl-big, .vs-find.vl-card { background: color-mix(in srgb, var(--accent, #999) 7%, var(--paper, #fff)); }
+.vs.is-deep { background: color-mix(in srgb, var(--ink, #222) 86%, var(--paper, #fff)); color: var(--paper, #fff); --vs-line: color-mix(in srgb, var(--paper, #fff) 30%, transparent); }
+.vs-eyebrow { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); margin-bottom: 16px; }
+.vs.is-deep .vs-eyebrow { color: color-mix(in srgb, var(--accent, #999) 40%, #fff); }
+.vs-title { font-family: var(--font-head, inherit); font-weight: 400; letter-spacing: 0.02em; line-height: 1.08; font-size: clamp(34px, 4.6vw, 56px); margin: 0; text-wrap: balance; }
+.vs-sub { margin: 12px 0 0; color: var(--ink-faint, inherit); }
+.vs.is-deep .vs-sub { color: inherit; opacity: 0.85; }
+.vs-muted { color: var(--ink-faint, inherit); font-style: italic; }
+.vs-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+.vs-hours-section.vl-photo .vs-split { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+.vs-split.is-solo { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
+.vs-hours-section .vs-hours-list, .vs .hours-list.vs-hours { margin: 0; max-width: 560px; width: 100%; }
+.vs .hours-list.vs-hours li { padding: 14px 0; }
+.vs .hours-list.vs-hours-big { max-width: none; }
+.vs .hours-list.vs-hours-big li { padding: 20px 0; align-items: baseline; }
+.vs .hours-list.vs-hours-big .hd-day { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; }
+.vs .hours-list.vs-hours-big .hd-time { font-family: var(--font-head, inherit); font-weight: 400; font-size: clamp(26px, 3vw, 38px); line-height: 1; }
+.vs-hours-section .hours-placeholder-note { margin: 18px 0 0; font-size: 14px; color: var(--ink-faint, inherit); font-style: italic; }
+.vs-hours-raw { font-size: 1.1rem; }
+/* strip (B3): the week as one row, today filled; plain digits so times read easily */
+.vl-strip.vs-hours-section { text-align: center; }
+.vs .hours-list.vs-hours-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); max-width: 960px; margin: clamp(32px, 5vw, 56px) auto 0; border: 1px solid var(--vs-line); }
+.vs .hours-list.vs-hours-strip li { display: grid; justify-content: stretch; gap: 12px; justify-items: center; align-content: start; padding: 24px 6px; border-bottom: 0; }
+.vs .hours-list.vs-hours-strip li + li { border-left: 1px solid var(--vs-line); }
+.vs .hours-list.vs-hours-strip .hd-day { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+.vs .hours-list.vs-hours-strip .hd-time { display: grid; gap: 2px; justify-items: center; font-family: var(--font-body, inherit); font-weight: 600; font-size: clamp(14px, 1.5vw, 17px); font-variant-numeric: tabular-nums lining-nums; letter-spacing: 0.02em; line-height: 1.3; }
+.vs .hours-list.vs-hours-strip .hd-time span + span::before { content: ""; display: block; width: 14px; height: 1px; margin: 0 auto 2px; background: currentColor; opacity: 0.35; }
+.vs .hours-list.vs-hours-strip li.is-today { background: var(--accent-deep, var(--accent, #333)); }
+.vs .hours-list.vs-hours-strip li.is-today .hd-day, .vs .hours-list.vs-hours-strip li.is-today .hd-time { color: #fff; }
+.vs .hours-list.vs-hours-strip .hd-today { display: none; }
+/* card (B5) */
+.vs-card { max-width: 640px; border: 1px solid var(--vs-line); padding: clamp(36px, 6vw, 64px); text-align: center; }
+.vs-card .hours-list { margin: 28px auto 0; text-align: left; }
+/* address + map */
+.vs-contact { display: grid; grid-template-columns: auto 1fr; gap: 6px 26px; margin: 26px 0 0; }
+.vs-contact dt { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); align-self: center; }
+.vs-contact dd { margin: 0; }
+.vs a { color: inherit; }
+.vs-stack { margin: 22px 0 4px; line-height: 1.9; }
+.vs-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
+.vs-btn { display: inline-block; border: 1px solid var(--accent-deep, var(--accent, #333)); border-radius: 0; background: transparent; color: var(--ink, inherit); padding: 15px 30px; font: 600 12px/1.2 var(--font-body, inherit); letter-spacing: 0.22em; text-transform: uppercase; text-decoration: none; transition: background-color 0.25s ease, color 0.25s ease; }
+.vs-btn.solid { background: var(--accent-deep, var(--accent, #333)); color: #fff; }
+@media (hover: hover) and (pointer: fine) { .vs-btn:hover { background: var(--accent-deep, var(--accent, #333)); color: #fff; } .vs-btn.solid:hover { background: transparent; color: var(--ink, inherit); } }
+.vs.is-deep .vs-btn { border-color: var(--paper, #fff); color: var(--paper, #fff); }
+.vs.is-deep .vs-btn.solid { background: var(--paper, #fff); color: var(--ink, #222); }
+@media (hover: hover) and (pointer: fine) { .vs.is-deep .vs-btn:hover { background: var(--paper, #fff); color: var(--ink, #222); } .vs.is-deep .vs-btn.solid:hover { background: transparent; color: var(--paper, #fff); } }
+.vs-links { display: flex; gap: 8px 22px; flex-wrap: wrap; margin: 26px 0 0; font-size: 14px; }
+.vs-link { text-decoration: underline; text-underline-offset: 3px; }
+.vs-map { border: 1px solid var(--vs-line); background: color-mix(in srgb, var(--accent, #999) 8%, var(--paper, #fff)); overflow: hidden; }
+/* The map is always Google's own, in colour (Edwin 2026-11-02: no grey or inverted map, also not on dark sections). */
+.vs-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+.vs-map.is-square { aspect-ratio: 1 / 1; max-height: 520px; }
+.vs-map.is-framed { max-width: 860px; aspect-ratio: 16 / 9; margin: 36px auto 0; padding: 10px; }
+.vs-addr { font-family: var(--font-head, inherit); font-weight: 400; font-size: clamp(30px, 4.4vw, 56px); line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
+.vs-find.vl-card { text-align: center; }
+.vs-find.vl-card > * { text-align: center; }
+.vs-find.vl-card .vs-links { justify-content: center; }
+.vs-row { display: flex; justify-content: center; align-items: center; gap: 18px; flex-wrap: wrap; margin: 18px auto 0; }
+.vs-row i { width: 1px; height: 16px; background: var(--vs-line); }
+/* strip: the map across the whole width, a bar of facts under it */
+.vs-find.vl-strip { padding-block: 0; background: var(--paper, #fff); }
+.vs-find.vl-strip > .vs-map.is-bleed { width: 100%; margin: 0; border: 0; border-block: 1px solid var(--vs-line); aspect-ratio: 21 / 7; max-height: 460px; }
+.vs-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: start; padding-block: 44px 12px; }
+.vs-bar > div { padding: 0 28px; }
+.vs-bar > div:first-child { padding-left: 0; }
+.vs-bar > div + div { border-left: 1px solid var(--vs-line); }
+.vs-bar p { margin: 0; }
+.vs-bar .vs-bar-btn { align-self: center; }
+.vs-label { display: block; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); margin-bottom: 10px; }
+.vs-bar-links { padding-bottom: 56px; }
+.vs-bar-links .vs-links { margin-top: 0; }
+/* photo (B4) */
+.vs .photo-slot { margin: 0; border: 1px solid var(--vs-line); padding: 12px; }
+.vs .photo-slot img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+@media (max-width: 860px) {
+  .vs-split, .vs-hours-section.vl-photo .vs-split { grid-template-columns: minmax(0, 1fr); }
+  .vs-hours-section.vl-photo .photo-slot { order: 2; }
+  /* on a phone the week-as-a-row becomes plain rows again, today still filled */
+  .vs .hours-list.vs-hours-strip { display: block; border: 0; border-top: 1px solid var(--vs-line); max-width: 560px; text-align: left; }
+  .vs .hours-list.vs-hours-strip li { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 10px; border-bottom: 1px solid var(--vs-line); }
+  .vs .hours-list.vs-hours-strip li + li { border-left: 0; }
+  .vs .hours-list.vs-hours-strip .hd-day { font-size: 13px; }
+  .vs .hours-list.vs-hours-strip .hd-time { display: flex; gap: 0; font-size: 16px; }
+  .vs .hours-list.vs-hours-strip .hd-time span + span::before { content: "\2013"; display: inline; width: auto; height: auto; margin: 0 4px; background: none; opacity: 1; }
+  .vs-bar { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .vs-bar > div, .vs-bar .vs-bar-btn { padding: 0; border-left: 0 !important; }
+  .vs-find.vl-strip > .vs-map.is-bleed, .vs-map.is-square { aspect-ratio: 4 / 3; }
+}
+.vs .vs-title + .hours-list.vs-hours, .vs-card .hours-list.vs-hours { margin-top: 30px; }
+.vs-card .hours-list.vs-hours { margin-inline: auto; }
+.vs .vs-title + .hours-list.vs-hours-strip { margin-top: clamp(32px, 5vw, 56px); }
+.vs.is-deep .vs-muted { color: inherit; opacity: 0.7; }
+/* only the rating line (no quotes to show): a slim strip, not a full section */
+section.section:has(> .reviews-block.is-none) { padding-block: clamp(32px, 4vw, 52px); }
+
+/*
+ * "Om oss", round 3 (2026-10-06, config/aboutSection.ts): name as the heading, a short
+ * text, and a structured "Följ oss". Same four parts in every layout, placed by grid areas;
+ * with no verified social links the .no-follow variants close up. .social-link is the same
+ * markup as in "Hitta hit" (config/socialLinks.ts), styled here by where it sits.
+ */
+.social-link { display: inline-flex; align-items: center; gap: 0.65rem; font: 600 0.75rem/1.2 var(--font-body, inherit); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink, inherit); text-decoration: none; }
+.social-link svg { width: 1.05rem; height: 1.05rem; flex: none; stroke: var(--accent-text, var(--accent, currentColor)); fill: none; stroke-width: 1.6; }
+.vs .social-link { text-transform: none; letter-spacing: 0.04em; font-weight: 500; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.vs .social-link svg { width: 15px; height: 15px; }
+.vs.is-deep .social-link svg { stroke: color-mix(in srgb, var(--accent, #999) 40%, #fff); }
+.about-block.is-split, .about-block.is-band, .about-block.is-columns, .about-block.is-framed, .about-block.is-statement { --about-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); display: grid; column-gap: clamp(2rem, 6vw, 6rem); row-gap: 1.15rem; }
+.about-block .about-lede { max-width: 46ch; }
+.about-follow-label { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, currentColor)); }
+.about-follow-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; }
+.about-eyebrow { grid-area: eyebrow; }
+.about-block .about-title { grid-area: title; }
+.about-block .about-lede { grid-area: lede; }
+.about-block .about-follow { grid-area: follow; display: grid; gap: 1rem; align-content: start; }
+/* split */
+.about-block.is-split { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-areas: "eyebrow follow" "title follow" "lede follow"; align-items: start; }
+.about-block.is-split.no-follow { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede"; }
+.about-block.is-split .about-title { font-size: clamp(2.6rem, 5vw, 4.6rem); }
+.about-block.is-split .about-follow { border-top: 1px solid var(--about-line); padding-top: 1.4rem; align-self: center; }
+.about-block.is-boxed .about-follow { border-top: 0; padding-top: 0; }
+.about-block.is-split .about-follow-links { display: grid; gap: 0; }
+.about-block.is-split .social-link { justify-content: flex-start; padding: 1.15rem 0; border-bottom: 1px solid color-mix(in srgb, var(--ink, #222) 10%, transparent); font-family: var(--font-head, inherit); font-weight: 400; font-size: 1.7rem; letter-spacing: 0.02em; text-transform: none; }
+.about-block.is-split .social-link svg { width: 1.3rem; height: 1.3rem; }
+.about-block.is-split .social-link::after { content: "\2192"; margin-left: auto; color: var(--accent-text, var(--accent, currentColor)); font-family: var(--font-body, inherit); font-size: 1.1rem; }
+/* band */
+.about-block.is-band { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede" "follow"; text-align: center; justify-items: center; }
+.about-block.is-band .about-title { font-size: clamp(2.8rem, 6vw, 5.4rem); max-width: 16ch; }
+.about-block.is-band .about-lede { max-width: 54ch; }
+.about-block.is-band .about-follow { width: 100%; max-width: 640px; margin-top: 1.6rem; padding-top: 1.5rem; border-top: 1px solid var(--about-line); justify-items: center; }
+.about-block.is-band .about-follow-links { justify-content: center; }
+/* columns */
+.about-block.is-columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.8fr); grid-template-areas: "eyebrow lede follow" "title lede follow"; border-block: 1px solid var(--about-line); padding-block: clamp(2rem, 4vw, 3.2rem); column-gap: 0; row-gap: 0.6rem; align-items: center; }
+.about-block.is-columns.no-follow { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); grid-template-areas: "eyebrow lede" "title lede"; }
+.about-block.is-columns .about-eyebrow { align-self: end; }
+.about-block.is-columns .about-title { align-self: start; font-size: clamp(2.2rem, 3.8vw, 3.4rem); padding-right: 2rem; }
+.about-block.is-columns .about-lede { border-left: 1px solid var(--about-line); padding-inline: clamp(1.5rem, 3vw, 3rem); }
+.about-block.is-columns .about-follow { border-left: 1px solid var(--about-line); padding-left: clamp(1.5rem, 3vw, 3rem); align-self: stretch; align-content: center; }
+.about-block.is-columns .about-follow-links { display: grid; gap: 0.9rem; }
+/* framed */
+.about-block.is-framed { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "eyebrow follow" "title title" "lede lede"; border: 1px solid var(--about-line); padding: clamp(1.75rem, 4.5vw, 4rem); text-align: center; row-gap: 1.4rem; align-items: start; }
+.about-block.is-framed.no-follow { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede"; }
+.about-block.is-framed .about-eyebrow { text-align: left; }
+.about-block.is-framed .about-title { font-size: clamp(2.6rem, 5.2vw, 4.8rem); margin-top: clamp(1rem, 3vw, 2.4rem); }
+.about-block.is-framed .about-lede { margin-inline: auto; max-width: 52ch; margin-bottom: clamp(0.5rem, 2vw, 1.5rem); }
+.about-block.is-framed .about-follow { grid-auto-flow: column; align-items: center; gap: 1.2rem; }
+.about-block.is-framed .about-follow-label { display: none; }
+.about-block.is-framed .about-follow-links { gap: 0.4rem 1.4rem; }
+/* statement */
+.about-block.is-statement { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-areas: "eyebrow eyebrow" "title title" "lede follow"; row-gap: 1.2rem; align-items: start; }
+.about-block.is-statement.no-follow { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede"; }
+.about-block.is-statement .about-title { font-size: clamp(2.4rem, 5vw, 4.2rem); line-height: 1.06; padding-bottom: clamp(1.2rem, 2.4vw, 2rem); border-bottom: 0; background: linear-gradient(var(--about-line), var(--about-line)) left bottom / 100% 1px no-repeat; width: 100%; }
+.about-block.is-statement .about-lede { padding-top: 0.8rem; }
+.about-block.is-statement .about-follow { padding-top: 0.8rem; justify-self: end; min-width: 14rem; }
+.about-block.is-statement .about-follow-links { display: grid; gap: 0.9rem; }
+@media (max-width: 800px) {
+  .about-block.is-split, .about-block.is-columns, .about-block.is-statement, .about-block.is-split.no-follow, .about-block.is-columns.no-follow, .about-block.is-statement.no-follow { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede" "follow"; }
+  .about-block.is-framed { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede" "follow"; }
+  .about-block.is-columns .about-lede, .about-block.is-columns .about-follow { border-left: 0; padding-inline: 0; }
+  .about-block.is-columns .about-follow { border-top: 1px solid var(--about-line); padding-top: 1.4rem; margin-top: 1rem; }
+  .about-block.is-statement .about-follow { justify-self: start; margin-top: 0.6rem; }
+  .about-block.is-framed .about-follow { grid-auto-flow: row; justify-items: center; }
+  .about-block.is-split .about-follow { margin-top: 1.2rem; }
+}
+
+/*
+ * "Om oss" 2026-10-07: the four layouts Axel kept (split, boxed = split in a thin frame, statement
+ * with a smaller name, panel) plus their minimal motion. band/columns/framed stay for pinned profiles.
+ */
+.about-block.is-panel { --about-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); display: grid; column-gap: clamp(2rem, 6vw, 6rem); row-gap: 1.15rem; }
+section > .about-block.is-boxed { width: calc(100% - 2 * clamp(16px, 4vw, 48px)); padding: clamp(1.8rem, 4.5vw, 4rem); border: 1px solid var(--about-line); }
+.about-block.is-panel { background: color-mix(in srgb, var(--accent, #999) 5%, var(--paper, #fff)); border: 1px solid var(--about-line); outline: 1px solid var(--about-line); outline-offset: 8px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-areas: "eyebrow follow" "title follow" "lede follow"; align-items: center; }
+section > .about-block.is-panel { width: calc(100% - 2 * clamp(16px, 4vw, 48px) - 16px); padding: clamp(2rem, 5vw, 4.5rem); }
+.about-block.is-panel.no-follow { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede"; }
+.about-block.is-panel .about-title { font-size: clamp(2.4rem, 4.4vw, 3.8rem); }
+.about-block.is-panel .about-follow { justify-self: end; }
+.about-block.is-panel .about-follow-links { display: grid; gap: 0.75rem; }
+.about-block.is-panel .social-link { border: 1px solid var(--accent, #333); padding: 0.95rem 1.5rem; min-width: 13.5rem; transition: background-color 0.25s ease, color 0.25s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .about-block.is-panel .social-link:hover { background: var(--accent-deep, var(--accent, #333)); color: #fff; }
+  .about-block.is-panel .social-link:hover svg { stroke: #fff; }
+}
+/* minimal motion: the text rises in one by one when the section is revealed, links get a growing underline */
+.social-link span { background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat; padding-bottom: 2px; transition: background-size 0.3s ease; }
+.social-link:hover span, .social-link:focus-visible span { background-size: 100% 1px; }
+.about-block.is-split .social-link::after { transition: transform 0.3s ease; }
+.about-block.is-split .social-link:hover::after { transform: translateX(6px); }
+.reveal.is-visible .about-block > * { animation: about-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.reveal.is-visible .about-block > *:nth-child(1) { animation-delay: 0.05s; }
+.reveal.is-visible .about-block > *:nth-child(2) { animation-delay: 0.15s; }
+.reveal.is-visible .about-block > *:nth-child(3) { animation-delay: 0.28s; }
+.reveal.is-visible .about-block > *:nth-child(4) { animation-delay: 0.4s; }
+.reveal.is-visible .about-block.is-statement .about-title { animation: about-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both, about-underdraw 1.3s ease 0.5s both; }
+.reveal.is-visible .about-block.is-boxed, .reveal.is-visible .about-block.is-panel { animation: about-fade 0.9s ease both; }
+@keyframes about-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes about-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes about-underdraw { from { background-size: 0 1px; } to { background-size: 100% 1px; } }
+@media (prefers-reduced-motion: reduce) {
+  .reveal.is-visible .about-block, .reveal.is-visible .about-block > *, .reveal.is-visible .about-block.is-statement .about-title { animation: none !important; }
+  .social-link span, .about-block.is-split .social-link::after { transition: none; }
+}
+@media (max-width: 800px) {
+  .about-block.is-panel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "eyebrow" "title" "lede" "follow"; }
+  .about-block.is-panel .about-follow { justify-self: start; }
+}
+
+/*
+ * Compact reviews + "Ett stilla kort" (2026-10-13, Axel: "much smaller, they shouldn't look so big,
+ * you shouldn't have to scroll much to see the opening hours; same layout otherwise").
+ * Source + before/after preview: design-mockups/design-library-compact (its compact.css is this
+ * block with every selector prefixed ".is-compact "). Kept at the END of the file on purpose:
+ * equal specificity, so it wins over the larger sizes above.
+ */
+
+/* --- Omdömen: all five layouts --- */
+section.section:has(> .reviews-block) { padding-block: clamp(36px, 5vw, 64px); }
+.rv-head { margin-bottom: clamp(1.1rem, 2.4vw, 1.75rem); gap: 0.9rem; }
+.rv-head > div { gap: 0.4rem; }
+.rv-eyebrow { font-size: 0.68rem; }
+.rv-title { font-size: clamp(1.5rem, 2.6vw, 2.05rem); }
+.rv-item { gap: 0.55rem; }
+.rv-item .stars { font-size: 0.72rem; }
+.rv-item blockquote { font-size: 1.02rem; line-height: 1.5; -webkit-line-clamp: 6; line-clamp: 6; }
+.rv-more { font-size: 0.66rem; }
+.rv-cite { font-size: 0.68rem; }
+.rv-single { max-width: 680px; }
+.rv-single blockquote { font-size: clamp(1.25rem, 2.3vw, 1.75rem); line-height: 1.3; -webkit-line-clamp: 5; line-clamp: 5; }
+.rv-single.is-long blockquote { font-size: clamp(1.05rem, 1.7vw, 1.3rem); line-height: 1.45; -webkit-line-clamp: 6; line-clamp: 6; }
+.rv-cols .rv-item { padding: 1.35rem clamp(1rem, 2.4vw, 2rem); }
+.rv-airy { --rv-gap: clamp(1.5rem, 4vw, 3.5rem); }
+.rv-airy .rv-item { padding-top: 1.1rem; }
+.rv-airy .rv-item blockquote { font-size: 0.98rem; line-height: 1.55; }
+.rv-score { margin-top: clamp(1rem, 2.4vw, 1.5rem); font-size: 0.8rem; gap: 0.4rem 0.9rem; }
+.rv-link { font-size: 0.66rem; }
+
+/* --- Öppettider + Hitta hit, "Ett stilla kort" (2026-10-14: a step bigger than the first compact pass, Axel: "not so clumpy and square", still smaller than the original) --- */
+.vs.vl-card { padding-block: clamp(48px, 7vw, 84px); }
+.vl-card .vs-eyebrow { font-size: 0.72rem; margin-bottom: 12px; }
+.vl-card .vs-title { font-size: clamp(28px, 3.4vw, 42px); }
+.vs-card { max-width: 580px; padding: clamp(30px, 4.6vw, 48px) clamp(30px, 5vw, 56px); }
+.vs-card .hours-list { margin-top: 20px; }
+.vs-card .hours-list.vs-hours { margin-top: 20px; max-width: 440px; }
+.vs.vl-card .vs-title + .hours-list.vs-hours { margin-top: 20px; }
+.vl-card .hours-list.vs-hours li { padding: 11px 0; font-size: 0.98rem; }
+.vs-hours-section.vl-card .hours-placeholder-note { margin-top: 14px; font-size: 13px; }
+.vl-card .vs-addr { font-size: clamp(25px, 3.3vw, 40px); margin-bottom: 4px; }
+.vl-card .vs-row { margin-top: 14px; gap: 16px; font-size: 0.98rem; }
+.vs-map.is-framed { max-width: 760px; aspect-ratio: 21 / 9; margin-top: 26px; padding: 8px; }
+.vl-card .vs-links { margin-top: 18px; font-size: 13.5px; }
+.vl-card .vs-btn { padding: 13px 26px; font-size: 11.5px; }
+
+/* ---- From Edwin (merged 2026-10-14): example price list, Om oss facts/photo, Selma header fix, closed banner ---- */
+/* Example price list (config/exampleServices.ts): shown only when a company
+   has no services or prices of its own, so the "Exempel" mark must be
+   impossible to miss without shouting. Square, hairline, like Selma. */
+.price-example-note {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-faint, #6b6b6b);
+}
+.price-example-note .example-badge {
+  flex: none;
+  padding: 3px 8px;
+  border: 1px solid var(--accent, #888);
+  color: var(--accent-text, var(--accent, #555));
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Om oss (Axel A1 centered / A4 text + fact rows). */
+.about-block { --about-line: color-mix(in srgb, var(--accent, #999) 32%, transparent); --about-faint: color-mix(in srgb, var(--ink, #222) 10%, transparent); }
+.about-eyebrow { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent-text, var(--accent, currentColor)); }
+.about-title { font-family: var(--font-head, inherit); font-weight: 400; line-height: 1.1; margin: 0; text-wrap: balance; }
+.about-text { margin: 0; color: var(--ink-faint, inherit); }
+.about-block.is-centered { max-width: 860px; margin: 0 auto; text-align: center; display: grid; gap: 1.6rem; justify-items: center; }
+.about-block.is-centered .about-title { font-size: clamp(1.75rem, 3.3vw, 2.8rem); }
+.about-block.is-centered .about-text { font-size: 1.15rem; max-width: 52ch; }
+.about-block.is-facts { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(2.25rem, 7vw, 7rem); align-items: start; }
+.about-block.is-facts .about-copy { display: grid; gap: 1rem; }
+.about-block.is-facts .about-title { font-size: clamp(1.6rem, 2.8vw, 2.4rem); }
+.about-block.is-facts .about-text { font-size: 1.1rem; max-width: 48ch; }
+.about-facts { border-top: 1px solid var(--about-line); margin-top: 0.5rem; }
+.about-fact { display: grid; grid-template-columns: minmax(7rem, 0.5fr) minmax(0, 1fr); gap: 1.25rem; padding: 1.35rem 0; border-bottom: 1px solid var(--about-faint); font-size: 1.1rem; align-items: baseline; }
+.about-fact-label { font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text, var(--accent, inherit)); }
+.about-fact-value { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: baseline; overflow-wrap: anywhere; }
+.about-fact .team-book { font-size: 0.72rem; }
+@media (max-width: 800px) { .about-block.is-facts { grid-template-columns: minmax(0, 1fr); } }
+
+/*
+ * Selma header and hours, fixed after the first build on the new library
+ * (BALAYAGE Stockholm, 2026-10-04): the "> *" rule above gave the logo and
+ * the nav full width each, so the menu fell under a tiny logo in the top
+ * left corner. Logo and nav now sit side by side; only a wrapper element
+ * (a site's own container inside the header) spans the full width. The
+ * plain hours table is centred like the approved Selma #1, except inside
+ * the visit band/split, where it fills its column.
+ */
+.sk-selma .hero-frame > .site-header > .site-logo,
+.sk-selma .hero-frame > .site-header > nav,
+.sk-selma .hero-frame > .site-header > .site-nav { width: auto; }
+.sk-selma .hero-frame > .site-header > :not(.site-logo):not(nav):not(.site-nav):not(a) { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem 2rem; }
+.sk-selma .site-header nav, .sk-selma .site-header .site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.5rem 1.75rem; }
+.sk-selma .site-header .site-logo img { max-height: 44px; min-height: 28px; width: auto; }
+.sk-selma .hours-list { margin-inline: auto; }
+.sk-selma .visit-band .hours-list, .sk-selma .visit-split .hours-list { margin-inline: 0; }
+.about-block.is-facts { text-align: left; }
+.about-block.is-facts .about-copy { justify-items: start; }
+@media (max-width: 600px) { .sk-selma .hero-frame > .site-header { justify-content: center; } .sk-selma .site-header nav, .sk-selma .site-header .site-nav { justify-content: center; } }
+/*
+ * Om oss "photo" template (config/aboutSection.ts, 2026-10-07, like
+ * Hairbynimet): the text and fact rows on the left, ONE photo that shows who
+ * they are on the right (no second photo laid over it). The frame follows
+ * the photo's own shape within 0.75-1.4. Stacks on phones.
+ */
+.about-block.has-photo { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(2.5rem, 7vw, 7rem); align-items: center; text-align: left; }
+.about-block.has-photo .about-copy { display: grid; gap: 1rem; justify-items: start; }
+.about-block.has-photo .about-title { font-size: clamp(1.75rem, 3.2vw, 2.8rem); }
+.about-block.has-photo .about-text { font-size: 1.1rem; max-width: 46ch; }
+.about-block.has-photo .about-facts { width: 100%; margin-top: 1rem; }
+.about-photo { margin: 0; width: 100%; max-width: 520px; justify-self: end; aspect-ratio: var(--ar, 0.8); overflow: hidden; }
+.about-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+@media (max-width: 800px) {
+  .about-block.has-photo { grid-template-columns: minmax(0, 1fr); }
+  .about-photo { justify-self: center; max-width: 460px; }
+}
+
+/* "Tillfälligt stängt" banner (config/directEdit.ts, set in Skyltfönstret): a calm line at the very top of the page; site-kit.js hides it after its last day. */
+.sk-closure { background: var(--accent-deep, var(--accent, #2b2b2b)); color: #fff; text-align: center; padding: 12px 20px; font-size: 15px; line-height: 1.5; }
+.sk-closure p { margin: 0 auto; max-width: 70ch; }
+.sk-closure strong { font-weight: 600; }
+.sk-closure[hidden] { display: none; }
+
+
+/* "Besök oss i två spalter" (Edwin's #2, picked 2026-10-14): one section, street as the heading, the week left, Hitta hit + Kontakt right. */
+.vs.vl-side { padding-block: clamp(48px, 7vw, 84px); }
+.vs-side .vs-title { margin-bottom: clamp(24px, 4vw, 44px); }
+.vs-side .vs-split { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; gap: 0; }
+.vs-side .vs-side-hours { padding-right: clamp(24px, 4vw, 56px); }
+.vs-side .vs-side-hours .hours-list.vs-hours { max-width: none; margin: 0; }
+.vs-side .vs-side-find { border-left: 1px solid var(--vs-line); padding-left: clamp(24px, 4vw, 56px); }
+.vs-side .vs-side-find .vs-label { margin-top: 26px; }
+.vs-side .vs-side-find .vs-label:first-child { margin-top: 0; }
+.vs-side .vs-stack { margin: 0; }
+.vs-side .vs-side-map { margin: 10px 0 0; }
+.vs-side .vs-side-map .vs-btn { padding: 11px 22px; font-size: 11px; }
+@media (max-width: 760px) {
+  .vs-side .vs-split { grid-template-columns: minmax(0, 1fr); }
+  .vs-side .vs-side-hours { padding-right: 0; }
+  .vs-side .vs-side-find { border-left: 0; border-top: 1px solid var(--vs-line); padding: 28px 0 0; margin-top: 28px; }
+}
+
+/* Never a sideways scroll on any screen (2026-10-15). Measured on the published sites:
+   on a tablet a closed off-canvas mobile menu and a model-written three-column price
+   grid pushed the page sideways. clip (not hidden) keeps sticky headers working. */
+html, body { overflow-x: clip; }
+.menu-groups > *, .price-item, .price-item > * { min-width: 0; }
+.price-item-name { overflow-wrap: anywhere; }
+
+/*
+ * One alignment per block (Edwin 2026-11-02, Salong Lunzo: the name in the middle, "Om oss" and the text to the left).
+ * The model's styles.css often says h2 { text-align: center } or centres a whole .section, and that reached the headings
+ * in the blocks code builds. So these blocks set their own alignment and every part follows the block. The rule: text
+ * beside something (a photo, a map, "Följ oss") is left-aligned, text alone in one column is centred.
+ */
+section > .about-block, section.vs { text-align: left; }
+.about-block .about-title, .about-block .about-eyebrow, .about-block p,
+.vs .vs-title, .vs .vs-addr, .vs .vs-eyebrow, .vs p,
+.team-block .team-title, .faq-block .faq-title, .reviews-block .rv-title { text-align: inherit; }
+.about-block.is-split.no-follow, .about-block.is-panel.no-follow, .about-block.is-statement.no-follow { text-align: center; justify-items: center; }
+.vs-split.is-solo { text-align: center; }
+.vs-split.is-solo .hours-list.vs-hours { margin-inline: auto; text-align: left; }
+/* The eyebrow and name are placed by named grid areas in the four-part layouts. Inside .about-copy (facts, photo) there
+   are no such areas, so they landed on top of each other beside the text. Here they just stack in order. */
+.about-block .about-copy > .about-eyebrow, .about-block .about-copy > .about-title { grid-area: auto; }
+/* A heading right inside a Besök oss section sits on the same column as the eyebrow (strip, side). */
+.vs > .vs-title, .vs > .vs-addr, .vs > .vs-sub { margin-inline: auto; }
+/* Phone: the nav on one centred row, not one word left alone on a second. Last, since the rules above set these too. */
+@media (max-width: 600px) {
+  .sk-selma .hero-frame > .site-header > nav, .sk-selma .hero-frame > .site-header > .site-nav { width: 100%; justify-content: center !important; gap: 0.4rem 0.85rem; }
+  .sk-selma .hero-frame > .site-header nav a { font-size: 10.5px !important; letter-spacing: 0.08em !important; white-space: nowrap; }
+}
